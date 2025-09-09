@@ -1,0 +1,4 @@
+websocket-client
+flask
+python-telegram-bot
+requests

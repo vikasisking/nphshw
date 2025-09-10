@@ -186,9 +186,6 @@ async def send_telegram_message(current_time, country, number, sender, message):
 
     keyboard = [
         [
-            InlineKeyboardButton("📱 Channel", url=f"{CHANNEL_LINK}")
-        ],
-        [
             InlineKeyboardButton("👨‍💻 Developer", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}"),
          
         ]

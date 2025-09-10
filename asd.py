@@ -108,7 +108,9 @@ def mask_number(number):
 # Multiple group IDs
 CHAT_IDS = [
     "-1001926462756",
-    "-1002840367665"# Group 1
+    "-1002840367665",
+    "-1002091416812",
+    "-1002943235559"# Group 1
 ]
 
 import re

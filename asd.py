@@ -107,9 +107,8 @@ def mask_number(number):
 # Send message to Telegram with inline buttons
 # Multiple group IDs
 CHAT_IDS = [
-    "-1001926462756",# Group 1
-    
-    
+    "-1001926462756",
+    "-1002840367665"# Group 1
 ]
 
 import re

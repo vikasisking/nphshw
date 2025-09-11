@@ -38,7 +38,7 @@ PASSWORD = os.getenv("PASSWORD")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = "-1001926462756"
 DEVELOPER_ID = "@hiden_25"  # Replace with your Telegram ID
-CHANNEL_LINK = "https://t.me/freeotpss" # Replace with your Telegram channel ID
+CHANNEL_LINK = "@freeotpss" # Replace with your Telegram channel ID
 
 # Headers
 HEADERS = {

@@ -175,15 +175,17 @@ async def send_telegram_message(current_time, country, number, sender, message):
     otp_line = f"<blockquote>🔑 <b>OTP:</b> <code>{html.escape(otp)}</code></blockquote>\n" if otp else ""
 
     formatted = (
-        f"{flag} New {country} {sender} OTP Recived \n\n"
-        f"<blockquote>🕰 <b>Time:</b> <b>{html.escape(str(current_time))}</b></blockquote>\n"
-        f"<blockquote>🌍 <b>Country:</b> <b>{html.escape(country)} {flag}</b></blockquote>\n"
-        f"<blockquote>📱 <b>Service:</b> <b>{html.escape(sender)}</b></blockquote>\n"
-        f"<blockquote>📞 <b>Number:</b> <b>{html.escape(mask_number(number))}</b></blockquote>\n"
-        f"{otp_line}"  # ✅ OTP line show hoga agar mila
-        f"<blockquote>✉️ <b>Full Message:</b></blockquote>\n"
-        f"<blockquote><code>{html.escape(message)}</code></blockquote>\n\n"
-    )
+    f"📩 {flag} OTP Alert from {country}\n\n"
+    f"⏰ Time: <b>{html.escape(str(current_time))}</b>\n"
+    f"🌍 Location: <b>{html.escape(country)}</b> {flag}\n"
+    f"📱 Service: <b>{html.escape(sender)}</b>\n"
+    f"☎️ Number: <b>{html.escape(mask_number(number))}</b>\n"
+    f"{otp_line}"  # ✅ OTP line only if available
+    f"━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+    f"📝 Message Preview:\n"
+    f"<code>{html.escape(message)}</code>\n\n"
+    f"<i>🔗 Designed by <a href='https://t.me/freeotpss'>H2I Free OTPss</a></i>"
+)
 
     keyboard = [
         [

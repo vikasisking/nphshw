@@ -188,11 +188,15 @@ async def send_telegram_message(current_time, country, number, sender, message):
     f"{otp_line}"  # ✅ OTP line only if available
     f"<blockquote>📝 <b>Message Preview:</b></blockquote>\n"
     f"<blockquote><code>{html.escape(message)}</code></blockquote>\n\n"
-    f"<i>🔗 Designed by <a href='https://t.me/freeotpss'>H2I Free OTPss</a></i>"
+   # f"<i>🔗 Designed by <a href='https://t.me/freeotpss'>H2I Free OTPss</a></i>"
 )
 
 
     keyboard = [
+         [
+            InlineKeyboardButton("☘ Channel", url=f"https://t.me/{CHANNEL_LINK.lstrip('@')}"),
+         
+        ],
         [
             InlineKeyboardButton("👨‍💻 Developer", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}"),
          

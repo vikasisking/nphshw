@@ -263,20 +263,13 @@ def start_otp_loop():
         fetch_otp_loop()
 
 if __name__ == '__main__':
-    # OTP fetch loop in thread
+    # OTP loop background me
     otp_thread = threading.Thread(target=start_otp_loop, daemon=True)
     otp_thread.start()
 
-    # Flask in thread with dynamic port
-    port = int(os.environ.get("PORT", 8080))
-    flask_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=port), daemon=True)
+    # Flask background me
+    flask_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=8080), daemon=True)
     flask_thread.start()
 
-    # Telegram bot in thread
-    tg_thread = threading.Thread(target=start_telegram_listener, daemon=True)
-    tg_thread.start()
-
-    # Keep main alive
-    while True:
-        time.sleep(5)
-
+    # Telegram bot MAIN thread me
+    start_telegram_listener()

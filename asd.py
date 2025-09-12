@@ -133,18 +133,27 @@ CHAT_IDS = [
     "-1002076542006"
 ]
 
+def mask_number(number: str) -> str:
+    if len(number) <= 4:
+        return "*" * len(number)
+    return number[:-3] + "***" + number[-2:]
+
 # ---------------- Final Send Function ----------------
 async def send_telegram_message(current_time, country, number, sender, message):
+    bot = Bot(token=BOT_TOKEN)  # 👈 ensure bot is defined
+
     flag = country_to_flag(country)
     otp = extract_otp(message)  # 🔎 extract OTP here
     otp_line = f"<blockquote>🔑 <b>OTP:</b> <code>{html.escape(otp)}</code></blockquote>\n" if otp else ""
+
+    masked_number = mask_number(number)  # 👈 yaha mask apply kar rahe hain
 
     formatted = (
         f"{flag} <b>OTP Alert from {country}</b>\n\n"
         f"<blockquote>⏰ <b>Time:</b> {html.escape(str(current_time))}</blockquote>\n"
         f"<blockquote>🌍 <b>Location:</b> {html.escape(country)} {flag}</blockquote>\n"
         f"<blockquote>📱 <b>Service:</b> {html.escape(sender)}</blockquote>\n"
-        f"<blockquote>☎️ <b>Number:</b> {html.escape(number)}</blockquote>\n"
+        f"<blockquote>☎️ <b>Number:</b> {html.escape(masked_number)}</blockquote>\n"  # 👈 masked number show karega
         f"{otp_line}"
         f"<blockquote>📝 <b>Message Preview:</b></blockquote>\n"
         f"<blockquote><code>{html.escape(message)}</code></blockquote>\n"

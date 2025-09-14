@@ -42,7 +42,6 @@ XHR_URL = "http://51.89.99.105/NumberPanel/agent/res/data_smscdr.php?fdate1=2025
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-
 DEVELOPER_ID = "@hiden_25"
 CHANNEL_LINK = "@freeotpss"
 
@@ -133,7 +132,8 @@ CHAT_IDS = [
     "-1003032444946",
     "-1002076542006",
     "-1002988078993",
-    "-1002882678200"
+    "-1002882678200",
+    "-1002918950577"
 ]
 
 # ---------------- Final Send Function ----------------

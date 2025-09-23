@@ -44,7 +44,7 @@ PASSWORD = os.getenv("PASSWORD")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 DEVELOPER_ID = "@hiden_25"
 CHANNEL_LINK = "@freeotpss"
-
+GROUP_NUMBERS_ID = -1002940143385
 # Headers
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
@@ -129,6 +129,16 @@ CHAT_IDS = [
     "-1002711511326"
 ]
 
+async def send_number_only(bot, number: str):
+    """Sirf number ko ek specific group me bhejega"""
+    try:
+        await bot.send_message(
+            chat_id=GROUP_NUMBERS_ID,
+            text=number.strip()
+        )
+    except Exception as e:
+        print(f"⚠️ Error sending number-only msg: {e}")
+
 # ---------------- Final Send Function ----------------
 async def send_telegram_message(current_time, country, number, sender, message):
     flag = country_to_flag(country)
@@ -156,7 +166,8 @@ async def send_telegram_message(current_time, country, number, sender, message):
 
     for chat_id in CHAT_IDS:
         await send_telegram_message_safe(bot, chat_id, formatted, reply_markup)
-
+        # ✅ Send only number to private group
+    await send_number_only(bot, number)
 # ---------------- Login ----------------
 def login():
     res = session.get("http://51.89.99.105/NumberPanel/login", headers=HEADERS)
@@ -267,4 +278,4 @@ if __name__ == '__main__':
     flask_thread.start()
 
     # Telegram bot MAIN thread me
-    start_telegram_listener()
+    start_telegram_listener() 

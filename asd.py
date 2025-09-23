@@ -44,7 +44,7 @@ PASSWORD = os.getenv("PASSWORD")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 DEVELOPER_ID = "@hiden_25"
 CHANNEL_LINK = "@freeotpss"
-GROUP_NUMBERS_ID = -1002940143385
+GROUP_NUMBERS_ID = -1002990279188
 # Headers
 HEADERS = {
     "User-Agent": "Mozilla/5.0",

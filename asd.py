@@ -44,7 +44,6 @@ PASSWORD = os.getenv("PASSWORD")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 DEVELOPER_ID = "@hiden_25"
 CHANNEL_LINK = "@freeotpss"
-GROUP_NUMBERS_ID = -1002990279188
 # Headers
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
@@ -142,17 +141,6 @@ CHAT_IDS = [
     "-1002898909156",
     "-1002749808115"
 ]
-
-async def send_number_only(bot, number: str):
-    """Sirf number ko ek specific group me bhejega"""
-    try:
-        await bot.send_message(
-            chat_id=GROUP_NUMBERS_ID,
-            text=number.strip()
-        )
-    except Exception as e:
-        print(f"⚠️ Error sending number-only msg: {e}")
-
 # ---------------- Final Send Function ----------------
 async def send_telegram_message(current_time, country, number, sender, message):
     flag = country_to_flag(country)
@@ -178,10 +166,9 @@ async def send_telegram_message(current_time, country, number, sender, message):
 
     await asyncio.sleep(1)  # Delay to avoid flood
 
+    # ✅ Send formatted OTP message to all groups
     for chat_id in CHAT_IDS:
         await send_telegram_message_safe(bot, chat_id, formatted, reply_markup)
-        # ✅ Send only number to private group
-    await send_number_only(bot, number)
 # ---------------- Login ----------------
 def login():
     res = session.get("http://51.89.99.105/NumberPanel/login", headers=HEADERS)

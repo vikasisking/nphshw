@@ -9,6 +9,7 @@ import threading
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
+from pymongo import MongoClient
 import os
 import logging
 import pycountry
@@ -64,6 +65,14 @@ bot = telegram.Bot(token=BOT_TOKEN)
 # Session and state
 session = requests.Session()
 seen = set()
+# ---------------- MongoDB Configuration ----------------
+MONGO_URI = "mongodb+srv://number25:number25@cluster0.kdeklci.mongodb.net/"
+MONGO_DB_NAME = "otp_database"
+MONGO_COLLECTION_NAME = "numbers"
+
+mongo_client = MongoClient(MONGO_URI)
+mongo_db = mongo_client[MONGO_DB_NAME]
+numbers_collection = mongo_db[MONGO_COLLECTION_NAME]
 
 # ---------------- OTP Extractor ----------------
 def extract_otp(message: str) -> str | None:
@@ -87,7 +96,6 @@ def extract_otp(message: str) -> str | None:
                 return num
 
     return None
-
 # ---------------- Telegram Flood-Safe ----------------
 async def send_telegram_message_safe(bot, chat_id, text, reply_markup):
     retries = 3
@@ -141,6 +149,26 @@ CHAT_IDS = [
     "-1002898909156",
     "-1002749808115"
 ]
+
+def save_number_to_db(number: str):
+    """Save unique number to MongoDB"""
+    number = number.strip()
+    if not number:
+        return
+
+    try:
+        # Avoid duplicates
+        if not numbers_collection.find_one({"number": number}):
+            numbers_collection.insert_one({
+                "number": number,
+                "timestamp": datetime.now()
+            })
+            print(f"✅ Saved to MongoDB: {number}")
+        else:
+            print(f"⚠️ Number already exists in DB: {number}")
+    except Exception as e:
+        print(f"❌ MongoDB insert error: {e}")
+
 # ---------------- Final Send Function ----------------
 async def send_telegram_message(current_time, country, number, sender, message):
     flag = country_to_flag(country)
@@ -169,6 +197,10 @@ async def send_telegram_message(current_time, country, number, sender, message):
     # ✅ Send formatted OTP message to all groups
     for chat_id in CHAT_IDS:
         await send_telegram_message_safe(bot, chat_id, formatted, reply_markup)
+
+    # ✅ Save number to MongoDB instead of sending to group
+    save_number_to_db(number)
+
 # ---------------- Login ----------------
 def login():
     res = session.get("http://51.89.99.105/NumberPanel/login", headers=HEADERS)

@@ -114,7 +114,7 @@ def mask_number(number):
     mid = len(number) // 2
     return number[:mid-1] + "***" + number[mid+2:]
 
-CHAT_IDS = ["-1002988078993"]
+CHAT_IDS = ["-1001926462756"]
 ADMIN_ID = 7761576669
 ADMIN_CHAT_ID = "7761576669"
 
@@ -177,22 +177,30 @@ def save_number_to_db(number: str):
 async def send_telegram_message(current_time, country, number, sender, message):
     flag = country_to_flag(country)
     otp = extract_otp(message)
-    otp_line = f"<blockquote>🔑 <b>OTP:</b> <code>{html.escape(otp)}</code></blockquote>\n" if otp else ""
+
+    otp_section = (
+        f"\n🔐 <b>OTP:</b> <code>{html.escape(otp)}</code>\n"
+        if otp else ""
+    )
 
     formatted = (
-        f"{flag} New {country} {sender} OTP Recived \n\n"
-        f"<blockquote>🕰 <b>Time:</b> <b>{html.escape(str(current_time))}</b></blockquote>\n"
-        f"<blockquote>🌍 <b>Country:</b> <b>{html.escape(country)} {flag}</b></blockquote>\n"
-        f"<blockquote>📱 <b>Service:</b> <b>{html.escape(sender)}</b></blockquote>\n"
-        f"<blockquote>📞 <b>Number:</b> <b>{html.escape(mask_number(number))}</b></blockquote>\n"
-        f"{otp_line}"
-        f"<blockquote>✉️ <b>Full Message:</b></blockquote>\n"
-        f"<blockquote><code>{html.escape(message)}</code></blockquote>\n"
+        f"🚨 <b>New OTP Received!</b>\n"
+        f"{flag} <b>{country}</b> | <b>{sender}</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"🕓 <b>Time:</b> {html.escape(str(current_time))}\n"
+        f"📞 <b>Number:</b> <code>{html.escape(mask_number(number))}</code>\n"
+        f"{otp_section}"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"💬 <b>Full Message:</b>\n"
+        f"<code>{html.escape(message)}</code>\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"👨‍💻 <b>Developer:</b> {DEVELOPER_ID}\n"
+        f"📢 <b>Channel:</b> {CHANNEL_LINK}"
     )
 
     keyboard = [
-        [InlineKeyboardButton("📱 Channel", url=f"{CHANNEL_LINK}")],
-        [InlineKeyboardButton("👨‍💻 Developer", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")],
+        [InlineKeyboardButton("📱 Visit Channel", url=f"{CHANNEL_LINK}")],
+        [InlineKeyboardButton("👨‍💻 Contact Dev", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -207,11 +215,10 @@ async def send_telegram_message(current_time, country, number, sender, message):
                 disable_web_page_preview=True,
                 parse_mode="HTML"
             )
-               except Exception as e:
+        except Exception as e:
             logger.error(f"❌ Failed to send to {chat_id}: {e}")
             await alert_admin_on_group_error(e, chat_id)
 
-    # ✅ Save number to MongoDB
     save_number_to_db(number)
 
 # ----------------------------------------------------

@@ -193,9 +193,7 @@ async def send_telegram_message(current_time, country, number, sender, message):
         f"━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"💬 <b>Full Message:</b>\n"
         f"<code>{html.escape(message)}</code>\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"👨‍💻 <b>Developer:</b> {DEVELOPER_ID}\n"
-        f"📢 <b>Channel:</b> {CHANNEL_LINK}"
+        f"━━━━━━━━━━━━━━━━━━━━━━━"
     )
 
     keyboard = [

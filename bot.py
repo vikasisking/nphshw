@@ -225,11 +225,30 @@ async def send_telegram_message(current_time, country, number, sender, message):
 # Telegram Commands
 # ----------------------------------------------------
 async def start_command(update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        f"✅ Number Bot {BOT_VERSION} is Active & Running!\n"
-        f"👨‍💻 Developer: {DEVELOPER_ID}\n"
-        f"📢 Channel: {CHANNEL_LINK}"
+    start_message = (
+        "🤖 <b>Number Bot Status</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"✅ <b>Status:</b> Active & Running\n"
+        f"⚙️ <b>Version:</b> <code>{BOT_VERSION}</code>\n"
+        f"👨‍💻 <b>Developer:</b> {DEVELOPER_ID}\n"
+        f"📢 <b>Official Channel:</b> <a href='{CHANNEL_LINK}'>Click Here</a>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "💡 Use this bot to monitor OTP messages in real-time."
     )
+
+    keyboard = [
+        [InlineKeyboardButton("📱 Visit Channel", url=f"{CHANNEL_LINK}")],
+        [InlineKeyboardButton("👨‍💻 Contact Dev", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        start_message,
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+        reply_markup=reply_markup
+    )
+
 
 async def add_chat(update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:

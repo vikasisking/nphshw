@@ -159,14 +159,14 @@ async def send_telegram_message(current_time, country, number, sender, message):
     formatted = (
         f"🚨 <b>New OTP Received!</b>\n"
         f"{flag} <b>{country}</b> | <b>{sender}</b>\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
         f"🕓 <b>Time:</b> {html.escape(str(current_time))}\n"
         f"📞 <b>Number:</b> <code>{html.escape(mask_number(number))}</code>\n"
         f"{otp_section}"
-        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
         f"💬 <b>Full Message:</b>\n"
         f"<code>{html.escape(message)}</code>\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━"
+        f"━━━━━━━━━━━━━━━━━━━━"
     )
 
     keyboard = [

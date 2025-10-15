@@ -106,9 +106,9 @@ def mask_number(number):
     mid = len(number) // 2
     return number[:mid-1] + "***" + number[mid+2:]
 
-CHAT_IDS = ["-1002988078993"]
-ADMIN_ID = 76651402
-ADMIN_CHAT_ID = "76651402"
+CHAT_IDS = ["-1001926462756"]
+ADMIN_ID = 7761576669
+ADMIN_CHAT_ID = "7761576669"
 
 # ----------------------------------------------------
 # Admin Alert (Only Group Send Failures)

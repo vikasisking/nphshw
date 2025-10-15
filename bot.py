@@ -9,7 +9,6 @@ import threading
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
-from pymongo import MongoClient
 import os
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -43,8 +42,10 @@ LOGIN_URL = "http://51.89.99.105/NumberPanel/signin"
 XHR_URL = "http://51.89.99.105/NumberPanel/client/res/data_smscdr.php?fdate1=2025-09-05%2000:00:00&fdate2=2026-09-04%2023:59:59&frange=&fclient=&fnum=&fcli=&fgdate=&fgmonth=&fgrange=&fgclient=&fgnumber=&fgcli=&fg=0&sEcho=1&iColumns=9&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=02&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=1756968295291"
 USERNAME = "developer25"
 PASSWORD = "developer25"
-BOT_TOKEN = "8326711274:AAGdaZWhYml7jSMVlTnyTZSBygV4rgXWlQY"
-DEVELOPER_ID = "@hiden_25"
+#USERNAME = os.getenv("USERNAME", "rishivdoe92")
+#PASSWORD = os.getenv("PASSWORD", "rishivdoe92")
+BOT_TOKEN = "8326711274:AAGW3WP3cjviWMmyrPfB8nzd5TvC2JdbvU0"
+DEVELOPER_ID = "@hiden25"
 CHANNEL_LINK = "https://t.me/freeotpss"
 
 HEADERS = {
@@ -64,15 +65,6 @@ app = Flask(__name__)
 bot = telegram.Bot(token=BOT_TOKEN)
 session = requests.Session()
 seen = set()
-
-MONGO_URI = "mongodb+srv://number25:number25@cluster0.kdeklci.mongodb.net/"
-MONGO_DB_NAME = "otp_database"
-MONGO_COLLECTION_NAME = "numbers"
-
-mongo_client = MongoClient(MONGO_URI)
-mongo_db = mongo_client[MONGO_DB_NAME]
-numbers_collection = mongo_db[MONGO_COLLECTION_NAME]
-
 
 # ----------------------------------------------------
 # Login
@@ -114,12 +106,9 @@ def mask_number(number):
     mid = len(number) // 2
     return number[:mid-1] + "***" + number[mid+2:]
 
-CHAT_IDS = [
-    "-1001926462756",
-    "-1007379383883"
-]
-ADMIN_ID = 7761576669
-ADMIN_CHAT_ID = "7761576669"
+CHAT_IDS = ["-1002988078993"]
+ADMIN_ID = 76651402
+ADMIN_CHAT_ID = "76651402"
 
 # ----------------------------------------------------
 # Admin Alert (Only Group Send Failures)
@@ -155,53 +144,28 @@ def extract_otp(message: str) -> str | None:
                 return num_clean
     return None
 
-def save_number_to_db(number: str):
-    """Save unique number to MongoDB"""
-    number = number.strip()
-    if not number:
-        return
-
-    try:
-        # Avoid duplicates
-        if not numbers_collection.find_one({"number": number}):
-            numbers_collection.insert_one({
-                "number": number,
-                "timestamp": datetime.now()
-            })
-            print(f"✅ Saved to MongoDB: {number}")
-        else:
-            print(f"⚠️ Number already exists in DB: {number}")
-    except Exception as e:
-        print(f"❌ MongoDB insert error: {e}")
-  
 # ----------------------------------------------------
 # Send Telegram Message
 # ----------------------------------------------------
 async def send_telegram_message(current_time, country, number, sender, message):
     flag = country_to_flag(country)
     otp = extract_otp(message)
-
-    otp_section = (
-        f"\n🔐 <b>OTP:</b> <code>{html.escape(otp)}</code>\n"
-        if otp else ""
-    )
+    otp_line = f"<blockquote>🔑 <b>OTP:</b> <code>{html.escape(otp)}</code></blockquote>\n" if otp else ""
 
     formatted = (
-        f"🚨 <b>New OTP Received!</b>\n"
-        f"{flag} <b>{country}</b> | <b>{sender}</b>\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"🕓 <b>Time:</b> {html.escape(str(current_time))}\n"
-        f"📞 <b>Number:</b> <code>{html.escape(mask_number(number))}</code>\n"
-        f"{otp_section}"
-        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"💬 <b>Full Message:</b>\n"
-        f"<code>{html.escape(message)}</code>\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━"
+        f"{flag} New {country} {sender} OTP Recived \n\n"
+        f"<blockquote>🕰 <b>Time:</b> <b>{html.escape(str(current_time))}</b></blockquote>\n"
+        f"<blockquote>🌍 <b>Country:</b> <b>{html.escape(country)} {flag}</b></blockquote>\n"
+        f"<blockquote>📱 <b>Service:</b> <b>{html.escape(sender)}</b></blockquote>\n"
+        f"<blockquote>📞 <b>Number:</b> <b>{html.escape(mask_number(number))}</b></blockquote>\n"
+        f"{otp_line}"
+        f"<blockquote>✉️ <b>Full Message:</b></blockquote>\n"
+        f"<blockquote><code>{html.escape(message)}</code></blockquote>\n"
     )
 
     keyboard = [
-        [InlineKeyboardButton("📱 Visit Channel", url=f"{CHANNEL_LINK}")],
-        [InlineKeyboardButton("👨‍💻 Contact Dev", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")],
+        [InlineKeyboardButton("📱 Channel", url=f"{CHANNEL_LINK}")],
+        [InlineKeyboardButton("👨‍💻 Developer", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -220,36 +184,15 @@ async def send_telegram_message(current_time, country, number, sender, message):
             logger.error(f"❌ Failed to send to {chat_id}: {e}")
             await alert_admin_on_group_error(e, chat_id)
 
-    save_number_to_db(number)
-
 # ----------------------------------------------------
 # Telegram Commands
 # ----------------------------------------------------
 async def start_command(update, context: ContextTypes.DEFAULT_TYPE):
-    start_message = (
-        "🤖 <b>Number Bot Status</b>\n"
-        "━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"✅ <b>Status:</b> Active & Running\n"
-        f"⚙️ <b>Version:</b> <code>{BOT_VERSION}</code>\n"
-        f"👨‍💻 <b>Developer:</b> {DEVELOPER_ID}\n"
-        f"📢 <b>Official Channel:</b> <a href='{CHANNEL_LINK}'>Click Here</a>\n"
-        "━━━━━━━━━━━━━━━━━━━━━━━\n"
-        "💡 Use this bot to monitor OTP messages in real-time."
-    )
-
-    keyboard = [
-        [InlineKeyboardButton("📱 Visit Channel", url=f"{CHANNEL_LINK}")],
-        [InlineKeyboardButton("👨‍💻 Contact Dev", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
     await update.message.reply_text(
-        start_message,
-        parse_mode="HTML",
-        disable_web_page_preview=True,
-        reply_markup=reply_markup
+        f"✅ Number Bot {BOT_VERSION} is Active & Running!\n"
+        f"👨‍💻 Developer: {DEVELOPER_ID}\n"
+        f"📢 Channel: {CHANNEL_LINK}"
     )
-
 
 async def add_chat(update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:

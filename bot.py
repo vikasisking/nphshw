@@ -40,12 +40,11 @@ def country_to_flag(country_name: str) -> str:
 
 LOGIN_URL = "http://51.89.99.105/NumberPanel/signin"
 XHR_URL = "http://51.89.99.105/NumberPanel/agent/res/data_smscdr.php?fdate1=2025-09-05%2000:00:00&fdate2=2026-09-04%2023:59:59&frange=&fclient=&fnum=&fcli=&fgdate=&fgmonth=&fgrange=&fgclient=&fgnumber=&fgcli=&fg=0&sEcho=1&iColumns=9&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=3&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=1756968295291"
-USERNAME = "developer25"
-PASSWORD = "developer25"
-#USERNAME = os.getenv("USERNAME", "rishivdoe92")
-#PASSWORD = os.getenv("PASSWORD", "rishivdoe92")
-BOT_TOKEN = "8326711274:AAGW3WP3cjviWMmyrPfB8nzd5TvC2JdbvU0"
-DEVELOPER_ID = "@hiden25"
+USERNAME = os.getenv("USERNAME")
+PASSWORD = os.getenv("PASSWORD")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+DEVELOPER_ID = "@hiden_25"
+BOT_USERNAME = "freewpcheckbot"
 CHANNEL_LINK = "https://t.me/freeotpss"
 
 HEADERS = {
@@ -65,7 +64,6 @@ app = Flask(__name__)
 bot = telegram.Bot(token=BOT_TOKEN)
 session = requests.Session()
 seen = set()
-
 # ----------------------------------------------------
 # Login
 # ----------------------------------------------------
@@ -106,7 +104,9 @@ def mask_number(number):
     mid = len(number) // 2
     return number[:mid-1] + "***" + number[mid+2:]
 
-CHAT_IDS = ["-1001926462756"]
+CHAT_IDS = [
+    "-1001926462756"
+]
 ADMIN_ID = 7761576669
 ADMIN_CHAT_ID = "7761576669"
 
@@ -150,23 +150,34 @@ def extract_otp(message: str) -> str | None:
 async def send_telegram_message(current_time, country, number, sender, message):
     flag = country_to_flag(country)
     otp = extract_otp(message)
-    otp_line = f"<blockquote>🔑 <b>OTP:</b> <code>{html.escape(otp)}</code></blockquote>\n" if otp else ""
+
+    otp_section = (
+        f"\n🔐 <b>OTP:</b> <code>{html.escape(otp)}</code>\n"
+        if otp else ""
+    )
 
     formatted = (
-        f"{flag} New {country} {sender} OTP Recived \n\n"
-        f"<blockquote>🕰 <b>Time:</b> <b>{html.escape(str(current_time))}</b></blockquote>\n"
-        f"<blockquote>🌍 <b>Country:</b> <b>{html.escape(country)} {flag}</b></blockquote>\n"
-        f"<blockquote>📱 <b>Service:</b> <b>{html.escape(sender)}</b></blockquote>\n"
-        f"<blockquote>📞 <b>Number:</b> <b>{html.escape(mask_number(number))}</b></blockquote>\n"
-        f"{otp_line}"
-        f"<blockquote>✉️ <b>Full Message:</b></blockquote>\n"
-        f"<blockquote><code>{html.escape(message)}</code></blockquote>\n"
+        f"🚨 <b>New OTP Received!</b>\n"
+        f"{flag} <b>{country}</b> | <b>{sender}</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
+        f"🕓 <b>Time:</b> {html.escape(str(current_time))}\n"
+        f"📞 <b>Number:</b> <code>{html.escape(mask_number(number))}</code>\n"
+        f"{otp_section}"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
+        f"💬 <b>Full Message:</b>\n"
+        f"<code>{html.escape(message)}</code>\n"
+        f"━━━━━━━━━━━━━━━━━━━━"
     )
 
     keyboard = [
-        [InlineKeyboardButton("📱 Channel", url=f"{CHANNEL_LINK}")],
-        [InlineKeyboardButton("👨‍💻 Developer", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")],
+    [
+        InlineKeyboardButton("📱 Visit Channel", url=CHANNEL_LINK),
+        InlineKeyboardButton("👨‍💻 Contact Dev", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")
+    ],
+    [
+        InlineKeyboardButton(f"🤖 {BOT_USERNAME}", url=f"https://t.me/{BOT_USERNAME}?start=start")
     ]
+]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await asyncio.sleep(1)
@@ -183,17 +194,34 @@ async def send_telegram_message(current_time, country, number, sender, message):
         except Exception as e:
             logger.error(f"❌ Failed to send to {chat_id}: {e}")
             await alert_admin_on_group_error(e, chat_id)
-
 # ----------------------------------------------------
 # Telegram Commands
 # ----------------------------------------------------
 async def start_command(update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        f"✅ Number Bot {BOT_VERSION} is Active & Running!\n"
-        f"👨‍💻 Developer: {DEVELOPER_ID}\n"
-        f"📢 Channel: {CHANNEL_LINK}"
+    start_message = (
+        "🤖 <b>Number Bot Status</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"✅ <b>Status:</b> Active & Running\n"
+        f"⚙️ <b>Version:</b> <code>{BOT_VERSION}</code>\n"
+        f"👨‍💻 <b>Developer:</b> {DEVELOPER_ID}\n"
+        f"📢 <b>Official Channel:</b> <a href='{CHANNEL_LINK}'>Click Here</a>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "💡 Use this bot to monitor OTP messages in real-time."
     )
 
+    keyboard = [
+        [InlineKeyboardButton("📱 Visit Channel", url=f"{CHANNEL_LINK}")],
+        [InlineKeyboardButton("👨‍💻 Contact Dev", url=f"https://t.me/{DEVELOPER_ID.lstrip('@')}")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        start_message,
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+        reply_markup=reply_markup
+    )
+    
 async def add_chat(update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         return await update.message.reply_text("❌ You are not allowed to use this command.")

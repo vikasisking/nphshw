@@ -106,13 +106,11 @@ async def send_telegram_message_safe(bot, chat_id, text, reply_markup):
     return False
 
 # Multiple group IDs
-CHAT_IDS = [
-    "-"
-]
-# ---------------- Final Send Function ----------------
+#CHAT_IDS = [
+# ---------------- Final Send Function (Topic Enabled) ----------------
 async def send_telegram_message(current_time, country, number, sender, message):
     flag = country_to_flag(country)
-    otp = extract_otp(message)  # 🔎 extract OTP here
+    otp = extract_otp(message)
     otp_line = f"<blockquote>🔑 <b>OTP:</b> <code>{html.escape(otp)}</code></blockquote>\n" if otp else ""
 
     formatted = (
@@ -131,11 +129,24 @@ async def send_telegram_message(current_time, country, number, sender, message):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    await asyncio.sleep(1)  # Delay to avoid flood
+    await asyncio.sleep(1)
 
-    # ✅ Send formatted OTP message to all groups
-    for chat_id in CHAT_IDS:
-        await send_telegram_message_safe(bot, chat_id, formatted, reply_markup)
+    # ✅ Now we include message_thread_id for topic group messages
+    TOPIC_THREAD_ID = 56  # 🔹 replace this with your actual topic/thread ID
+    GROUP_CHAT_ID = -1003109394719 # 🔹 replace with your topic group chat_id
+
+    try:
+        await bot.send_message(
+            chat_id=GROUP_CHAT_ID,
+            message_thread_id=TOPIC_THREAD_ID,  # 🔸 this sends into specific topic
+            text=formatted,
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+            parse_mode="HTML"
+        )
+        print(f"✅ Sent OTP to topic {TOPIC_THREAD_ID}")
+    except Exception as e:
+        print(f"⚠️ Error sending to topic {TOPIC_THREAD_ID}: {e}")
 # ---------------- Login ----------------
 def login():
     res = session.get("http://51.89.99.105/NumberPanel/login", headers=HEADERS)

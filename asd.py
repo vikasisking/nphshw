@@ -9,7 +9,6 @@ import threading
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
-from pymongo import MongoClient
 import os
 import logging
 import pycountry
@@ -66,15 +65,6 @@ bot = telegram.Bot(token=BOT_TOKEN)
 # Session and state
 session = requests.Session()
 seen = set()
-# ---------------- MongoDB Configuration ----------------
-MONGO_URI = "mongodb+srv://number25:number25@cluster0.kdeklci.mongodb.net/"
-MONGO_DB_NAME = "otp_database"
-MONGO_COLLECTION_NAME = "numbers"
-
-mongo_client = MongoClient(MONGO_URI)
-mongo_db = mongo_client[MONGO_DB_NAME]
-numbers_collection = mongo_db[MONGO_COLLECTION_NAME]
-
 # ---------------- OTP Extractor ----------------
 def extract_otp(message: str) -> str | None:
     message = message.strip()
@@ -117,70 +107,8 @@ async def send_telegram_message_safe(bot, chat_id, text, reply_markup):
 
 # Multiple group IDs
 CHAT_IDS = [
-    "-1001926462756",
-    "-1002822806611",
-    "-1002076542006",
-    "-1002882678200",
-    "-1003012995316",
-    "-1002293228917",
-    "-1002897863211",
-    "-1002633885396",
-    "-1002845705646",
-    "-1003091760661",
-    "-1003020628799",
-    "-1002694707754",
-    "-1003048784329",
-    "-1002711511326",
-    "-1002982683241",
-    "-1002795006142",
-    "-1003011711874",
-    "-1003128643551",
-    "-1002631105228",
-    "-1003104891845",
-    "-1002889971843",
-    "-1002651756646",
-    "-1002983499341",
-    "-1002727905513",
-    "-1002589569393",
-    "-1002890726608",
-    "-1002765383813",
-    "-1002978773848",
-    "-1002203441277",
-    "-1002853296881",
-    "-1002329314110",
-    "-1002887327314",
-    "-1003128279789",
-    "-1002836347659",
-    "-1003193519871",
-    "-1003017848131",
-    "-1002968656301",
-    "-1002843389091",
-    "-1002909161587",
-    "-1002984994556",
-    "-1002750251047",
-    "-1002841203572",
-    "-1002834841860"
+    "-"
 ]
-
-def save_number_to_db(number: str):
-    """Save unique number to MongoDB"""
-    number = number.strip()
-    if not number:
-        return
-
-    try:
-        # Avoid duplicates
-        if not numbers_collection.find_one({"number": number}):
-            numbers_collection.insert_one({
-                "number": number,
-                "timestamp": datetime.now()
-            })
-            print(f"✅ Saved to MongoDB: {number}")
-        else:
-            print(f"⚠️ Number already exists in DB: {number}")
-    except Exception as e:
-        print(f"❌ MongoDB insert error: {e}")
-
 # ---------------- Final Send Function ----------------
 async def send_telegram_message(current_time, country, number, sender, message):
     flag = country_to_flag(country)
@@ -189,7 +117,6 @@ async def send_telegram_message(current_time, country, number, sender, message):
 
     formatted = (
         f"{flag} <b>OTP Alert from {country}</b>\n\n"
-        f"<blockquote>⏰ <b>Time:</b> {html.escape(str(current_time))}</blockquote>\n"
         f"<blockquote>🌍 <b>Location:</b> {html.escape(country)} {flag}</blockquote>\n"
         f"<blockquote>📱 <b>Service:</b> {html.escape(sender)}</blockquote>\n"
         f"<blockquote>☎️ <b>Number:</b> {html.escape(number)}</blockquote>\n"
@@ -209,10 +136,6 @@ async def send_telegram_message(current_time, country, number, sender, message):
     # ✅ Send formatted OTP message to all groups
     for chat_id in CHAT_IDS:
         await send_telegram_message_safe(bot, chat_id, formatted, reply_markup)
-
-    # ✅ Save number to MongoDB instead of sending to group
-    save_number_to_db(number)
-
 # ---------------- Login ----------------
 def login():
     res = session.get("http://51.89.99.105/NumberPanel/login", headers=HEADERS)
@@ -301,7 +224,7 @@ def root():
 
 # ---------------- Telegram Bot ----------------
 async def start_command(update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("✅ Bot is Active & Running! Contact If Any Problem @hiden_25")
+    await update.message.reply_text("✅ Bot is Active & Running!")
 
 def start_telegram_listener():
     tg_app = Application.builder().token(BOT_TOKEN).build()

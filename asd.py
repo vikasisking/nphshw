@@ -44,7 +44,7 @@ USERNAME = "developer25"
 PASSWORD = "developer25"
 BOT_TOKEN = "8099361498:AAEF6Oi3XfXcN2bREjNJRRfYK0dMmMtFKqA"
 DEVELOPER_ID = "@numbersupportzbot"
-CHANNEL_LINK = "https://t.me/+HIB_ar1RE_YwNTBl"
+CHANNEL_LINK = "@+HIB_ar1RE_YwNTBl"
 # Headers
 HEADERS = {
     "User-Agent": "Mozilla/5.0",

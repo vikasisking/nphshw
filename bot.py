@@ -276,7 +276,7 @@ def fetch_otp_loop():
                     operator = row[1].split("-")[0]
                     number = row[2]
                     sender = row[3]
-                    message = row[4]
+                    message = row[5]
 
                     hash_id = hashlib.md5((number + time_ + message).encode()).hexdigest()
                     if hash_id in seen:

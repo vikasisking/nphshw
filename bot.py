@@ -22,9 +22,6 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 # ----------------------------------------------------
 BOT_VERSION = "v0.2.0"
 
-# ----------------------------------------------------
-# Config
-# ----------------------------------------------------
 current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 EXTRA_CODES = {"Kosovo": "XK"}  # special cases
 
@@ -163,9 +160,9 @@ async def send_telegram_message(current_time, country, number, sender, message):
         f"📞 <b>Number:</b> <code>{html.escape(mask_number(number))}</code>\n"
         f"{otp_section}"
         f"━━━━━━━━━━━━━━━━━━━\n"
-        #f"💬 <b>Full Message:</b>\n"
-        #f"<code>{html.escape(message)}</code>\n"
-        #f"━━━━━━━━━━━━━━━━━━━"
+        f"💬 <b>Full Message:</b>\n"
+        f"<code>{html.escape(message)}</code>\n"
+        f"━━━━━━━━━━━━━━━━━━━"
     )
 
     keyboard = [
